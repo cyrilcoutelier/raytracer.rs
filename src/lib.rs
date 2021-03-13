@@ -1,7 +1,7 @@
+pub mod color;
 pub mod config;
-pub mod vector;
+pub mod image;
+pub mod output;
 pub mod point;
 pub mod ray;
-pub mod image;
-pub mod color;
-pub mod output;
+pub mod vector;

@@ -1,6 +1,6 @@
+use raytracer::color::Color;
 use raytracer::config;
 use raytracer::image::Image;
-use raytracer::color::Color;
 use raytracer::output;
 
 fn main() -> std::io::Result<()> {
