@@ -1,3 +1,6 @@
+use float_eq::float_eq;
+
+#[derive(Debug)]
 pub struct Point {
     data: [f32; 3],
 }
@@ -17,5 +20,17 @@ impl Point {
 
     pub fn z(self: &Point) -> f32 {
         self.data[2]
+    }
+}
+
+impl PartialEq for Point {
+    fn eq(&self, other: &Self) -> bool {
+        for (i, left) in self.data.iter().enumerate() {
+            let right = other.data[i];
+            if !float_eq!(*left, right, abs <= 0.000_001) {
+                return false;
+            }
+        }
+        true
     }
 }
