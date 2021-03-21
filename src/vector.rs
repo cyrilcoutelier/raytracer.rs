@@ -34,6 +34,18 @@ impl Vector {
         }
     }
 
+    pub fn to_angles(self: &Self) -> (f32, f32) {
+        let x = self.x();
+        let z = self.z();
+        let angle_y = z.atan2(x);
+
+        let norm = self.get_norm();
+        let y = self.y() / norm;
+        let angle_x = y.asin();
+
+        (angle_x, angle_y)
+    }
+
     fn calc_norm(self: &Self) -> f32 {
         let pow_sum = self
             .data

@@ -78,6 +78,25 @@
       },
       "args": [],
       "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug integration test 'vector'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--test=vector",
+          "--package=raytracer"
+        ],
+        "filter": {
+          "name": "vector",
+          "kind": "test"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
     }
   ]
 }
