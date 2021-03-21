@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use float_eq::float_eq;
 
 use crate::color::Color;
@@ -25,7 +27,7 @@ impl Plane {
 }
 
 impl Object for Plane {
-    fn get_intersections(self: &Self, ray: &Ray) -> Vec<Intersection> {
+    fn get_intersections(self: &Self, ray: &Ray, object: Rc<dyn Object>) -> Vec<Intersection> {
         let dot = self.normal.dot(&ray.direction);
         if float_eq!(dot, 0.0, abs <= 0.000_001) {
             return vec![];
@@ -37,6 +39,7 @@ impl Object for Plane {
         vec![Intersection {
             distance_ratio,
             color: self.color,
+            object,
         }]
     }
 }

@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use float_eq::float_eq;
 
 use crate::color::Color;
@@ -24,9 +26,7 @@ impl Sphere {
 }
 
 impl Object for Sphere {
-    fn get_intersections(self: &Self, ray: &Ray) -> Vec<Intersection> {
-        let mut intersections = Vec::with_capacity(2);
-
+    fn get_intersections(self: &Self, ray: &Ray, object: Rc<dyn Object>) -> Vec<Intersection> {
         let camera_pos_relative = utils::get_points_diff(&ray.origin, &self.center);
 
         let a = ray.direction.dot(&ray.direction);
@@ -36,23 +36,24 @@ impl Object for Sphere {
         let discriminant = b * b - 4.0 * a * c;
         if float_eq!(discriminant, 0.0, abs <= 0.000_001) {
             let solution = -b / (2.0 * a);
-            intersections.push(Intersection {
+            return vec!(Intersection {
                 distance_ratio: solution,
                 color: self.color,
+                object,
             });
         } else if discriminant > 0.0 {
             let solution_1 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
-            intersections.push(Intersection {
+            let solution_2 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
+            return vec!(Intersection {
                 distance_ratio: solution_1,
                 color: self.color,
-            });
-            let solution_2 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
-            intersections.push(Intersection {
+                object: object.clone(),
+            }, Intersection {
                 distance_ratio: solution_2,
                 color: self.color,
+                object,
             });
         }
-
-        intersections
+        vec!()
     }
 }

@@ -1,3 +1,4 @@
+use std::rc::Rc;
 use rand::Rng;
 use raytracer::camera::Camera;
 use raytracer::color::Color;
@@ -39,9 +40,9 @@ fn main() -> std::io::Result<()> {
         let blue = rng.gen_range(0.0..1.0);
         let color = Color::new(red, green, blue);
         let sphere = Sphere::new(Point::new(x, y, z), radius, color);
-        world.add(Box::new(sphere));
+        world.add_object(Rc::new(sphere));
     }
-    world.add(Box::new(Plane::new(
+    world.add_object(Rc::new(Plane::new(
         Point::new(0.0, -3.0, 0.0),
         Vector::new(0.0, 1.0, 0.0),
         Color::new(0.0, 0.5, 1.0),
