@@ -6,6 +6,16 @@ pub struct Matrix {
 }
 
 impl Matrix {
+    pub fn new_identity() -> Matrix {
+        let data = [
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ];
+        Matrix { data }
+    }
+
     pub fn new_rotation_x(angle: f32) -> Matrix {
         let cos = angle.cos();
         let sin = angle.sin();
