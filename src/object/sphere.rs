@@ -5,15 +5,17 @@ use crate::object::Object;
 use crate::point::Point;
 use crate::ray::Ray;
 use crate::utils;
+use crate::color::Color;
 
 pub struct Sphere {
     center: Point,
     radius: f32,
+    color: Color,
 }
 
 impl Sphere {
-    pub fn new(center: Point, radius: f32) -> Self {
-        Sphere { center, radius }
+    pub fn new(center: Point, radius: f32, color: Color) -> Self {
+        Sphere { center, radius, color }
     }
 }
 
@@ -32,15 +34,18 @@ impl Object for Sphere {
             let solution = -b / (2.0 * a);
             intersections.push(Intersection {
                 distance_ratio: solution,
+                color: self.color,
             });
         } else if discriminant > 0.0 {
             let solution_1 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
             intersections.push(Intersection {
                 distance_ratio: solution_1,
+                color: self.color,
             });
             let solution_2 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
             intersections.push(Intersection {
                 distance_ratio: solution_2,
+                color: self.color,
             });
         }
 

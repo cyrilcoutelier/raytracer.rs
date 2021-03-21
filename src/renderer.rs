@@ -32,7 +32,7 @@ pub fn render(camera: &Camera, image: &mut Image, world: &World) {
             let ray = Ray::new(ray_origin, ray_direction);
             let intersection = world.get_closest_intersection(&ray);
             match intersection {
-                Some(_i) => image.set_color(image_x, image_y, Color::new(1.0, 0.0, 0.0)),
+                Some(i) => image.set_color(image_x, image_y, i.color),
                 None => image.set_color(image_x, image_y, Color::new(0.0, 0.0, 0.0)),
             };
         }

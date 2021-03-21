@@ -1,9 +1,11 @@
 pub mod sphere;
 
 use crate::ray::Ray;
+use crate::color::Color;
 
 pub struct Intersection {
     pub distance_ratio: f32,
+    pub color: Color,
 }
 
 pub trait Object {
