@@ -104,6 +104,25 @@ impl Matrix {
         Point::new(result[0][0], result[0][1], result[0][2])
     }
 
+    pub fn dot_vector(self: &Matrix, other: &Vector) -> Vector {
+        let mut result = [[0.0, 0.0, 0.0, 0.0]];
+        let input = [[other.x(), other.y(), other.z(), 1.0]];
+
+        let size = result[0].len();
+        for (y, row) in result.iter_mut().enumerate() {
+            for (x, entry) in row.iter_mut().enumerate() {
+                for i in 0..size {
+                    let other_value = input[y][i];
+                    let self_value = self.data[i][x];
+                    *entry = *entry + (self_value * other_value);
+                }
+            }
+        }
+
+        Vector::new(result[0][0], result[0][1], result[0][2])
+    }
+}
+
 impl PartialEq for Matrix {
     fn eq(&self, other: &Self) -> bool {
         for (y, row) in self.data.iter().enumerate() {
