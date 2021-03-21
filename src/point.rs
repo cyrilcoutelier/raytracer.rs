@@ -2,7 +2,7 @@ use float_eq::float_eq;
 
 #[derive(Debug, Clone)]
 pub struct Point {
-    data: [f32; 3],
+    pub data: [f32; 3],
 }
 
 impl Point {
