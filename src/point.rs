@@ -1,6 +1,6 @@
 use float_eq::float_eq;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Point {
     data: [f32; 3],
 }
