@@ -19,10 +19,6 @@ pub fn write_image_to_file(image: &Image) -> std::io::Result<()> {
     for y in 0..*height {
         for x in 0..*width {
             let (red, green, blue) = image.get_pixel_color_8b(x, y);
-
-            // let red = 128;
-            // let green = round_color(x as f32, config::WIDTH as f32);
-            // let blue = round_color(y as f32, config::HEIGHT as f32);
             write!(writer, "{} {} {} ", red, green, blue)?;
         }
         writer.write_all(b"\n")?;
