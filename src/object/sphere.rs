@@ -1,11 +1,11 @@
 use float_eq::float_eq;
 
+use crate::color::Color;
 use crate::object::Intersection;
 use crate::object::Object;
 use crate::point::Point;
 use crate::ray::Ray;
 use crate::utils;
-use crate::color::Color;
 
 pub struct Sphere {
     center: Point,
@@ -15,7 +15,11 @@ pub struct Sphere {
 
 impl Sphere {
     pub fn new(center: Point, radius: f32, color: Color) -> Self {
-        Sphere { center, radius, color }
+        Sphere {
+            center,
+            radius,
+            color,
+        }
     }
 }
 
