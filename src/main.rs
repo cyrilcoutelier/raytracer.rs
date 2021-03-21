@@ -2,6 +2,7 @@ use raytracer::camera::Camera;
 use raytracer::config;
 use raytracer::image::Image;
 use raytracer::object::sphere::Sphere;
+use raytracer::object::plane::Plane;
 use raytracer::output;
 use raytracer::point::Point;
 use raytracer::renderer::render;
@@ -40,6 +41,7 @@ fn main() -> std::io::Result<()> {
         let sphere = Sphere::new(Point::new(x, y, z), radius, color);
         world.add(Box::new(sphere));
     }
+    world.add(Box::new(Plane::new(Point::new(0.0, -3.0, 0.0), Vector::new(0.0, 1.0, 0.0), Color::new(0.0, 0.5, 1.0))));
 
     render(&camera, &mut image, &world);
 

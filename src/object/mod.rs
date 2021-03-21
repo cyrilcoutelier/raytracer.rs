@@ -1,4 +1,5 @@
 pub mod sphere;
+pub mod plane;
 
 use crate::ray::Ray;
 use crate::color::Color;
