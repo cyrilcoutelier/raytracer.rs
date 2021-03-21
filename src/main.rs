@@ -1,22 +1,25 @@
-use raytracer::color::Color;
+use raytracer::camera::Camera;
 use raytracer::config;
 use raytracer::image::Image;
 use raytracer::output;
+use raytracer::point::Point;
+use raytracer::renderer::render;
+use raytracer::vector::Vector;
+use raytracer::world::World;
 
 fn main() -> std::io::Result<()> {
-    let mut image = Image::new(config::WIDTH, config::HEIGHT, None);
-    let width_f32 = image.width as f32;
-    let height_f32 = image.height as f32;
+    let mut image = Image::new(config::IMG_WIDTH, config::IMG_HEIGHT, None);
+    let camera = Camera::new_with_height(
+        config::VIEWPORT_HEIGHT,
+        config::FOCAL_LENGTH,
+        Point::new(0.0, 0.0, 0.0),
+        Vector::new(0.0, 0.0, 1.0),
+        0.0,
+        &image,
+    );
+    let world = World::new();
 
-    for x in 0..image.width {
-        for y in 0..image.height {
-            let red = 0.5;
-            let green = x as f32 / width_f32;
-            let blue = y as f32 / height_f32;
-            let color = Color::new(red, green, blue);
-            image.set_color(x, y, color);
-        }
-    }
+    render(&camera, &mut image, &world);
 
     output::write_image_to_file(&image)?;
 
