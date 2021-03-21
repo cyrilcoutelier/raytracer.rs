@@ -1,6 +1,9 @@
+use float_eq::float_eq;
+
 use crate::point::Point;
 use crate::vector::Vector;
 
+#[derive(Debug)]
 pub struct Matrix {
     data: [[f32; 4]; 4],
 }
@@ -99,5 +102,18 @@ impl Matrix {
         }
 
         Point::new(result[0][0], result[0][1], result[0][2])
+    }
+
+impl PartialEq for Matrix {
+    fn eq(&self, other: &Self) -> bool {
+        for (y, row) in self.data.iter().enumerate() {
+            for (x, left) in row.iter().enumerate() {
+                let right = other.data[y][x];
+                if !float_eq!(*left, right, abs <= 0.000_001) {
+                    return false;
+                }
+            }
+        }
+        true
     }
 }
