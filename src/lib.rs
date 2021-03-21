@@ -8,5 +8,6 @@ pub mod output;
 pub mod point;
 pub mod ray;
 pub mod renderer;
+pub mod utils;
 pub mod vector;
 pub mod world;

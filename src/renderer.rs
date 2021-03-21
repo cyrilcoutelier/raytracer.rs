@@ -22,8 +22,8 @@ pub fn render(camera: &Camera, image: &mut Image, world: &World) {
 
             let ray_direction = Vector::new(
                 camera.focal_length,
-                image_y_f32 - (camera.height / 2.0),
-                image_x_f32 - (camera.width / 2.0),
+                viewport_y - (camera.height / 2.0),
+                viewport_x - (camera.width / 2.0),
             );
 
             let ray_direction = matrix.dot_vector(&ray_direction);
@@ -32,7 +32,7 @@ pub fn render(camera: &Camera, image: &mut Image, world: &World) {
             let ray = Ray::new(ray_origin, ray_direction);
             let intersection = world.get_closest_intersection(&ray);
             match intersection {
-                Some(i) => println!("Shouldn't intersect yet"),
+                Some(_i) => image.set_color(image_x, image_y, Color::new(1.0, 0.0, 0.0)),
                 None => image.set_color(image_x, image_y, Color::new(0.0, 0.0, 0.0)),
             };
         }

@@ -1,8 +1,8 @@
-use crate::point::Point;
+pub mod sphere;
+
 use crate::ray::Ray;
 
 pub struct Intersection {
-    pub position: Point,
     pub distance_ratio: f32,
 }
 

@@ -1,6 +1,7 @@
 use raytracer::camera::Camera;
 use raytracer::config;
 use raytracer::image::Image;
+use raytracer::object::sphere::Sphere;
 use raytracer::output;
 use raytracer::point::Point;
 use raytracer::renderer::render;
@@ -13,11 +14,20 @@ fn main() -> std::io::Result<()> {
         config::VIEWPORT_HEIGHT,
         config::FOCAL_LENGTH,
         Point::new(0.0, 0.0, 0.0),
-        Vector::new(0.0, 0.0, 1.0),
+        Vector::new(1.0, 0.0, 0.0),
         0.0,
         &image,
     );
-    let world = World::new();
+    let mut world = World::new();
+    world.add(Box::new(Sphere::new(Point::new(10.0, 0.0, 0.0), 1.0)));
+    world.add(Box::new(Sphere::new(Point::new(10.0, 3.0, 0.0), 1.0)));
+    world.add(Box::new(Sphere::new(Point::new(10.0, -3.0, 0.0), 1.0)));
+    world.add(Box::new(Sphere::new(Point::new(10.0, 0.0, 3.0), 1.0)));
+    world.add(Box::new(Sphere::new(Point::new(10.0, 0.0, -3.0), 1.0)));
+    world.add(Box::new(Sphere::new(Point::new(10.0, 3.0, 3.0), 1.0)));
+    world.add(Box::new(Sphere::new(Point::new(10.0, -3.0, 3.0), 1.0)));
+    world.add(Box::new(Sphere::new(Point::new(10.0, 3.0, -3.0), 1.0)));
+    world.add(Box::new(Sphere::new(Point::new(10.0, -3.0, -3.0), 1.0)));
 
     render(&camera, &mut image, &world);
 

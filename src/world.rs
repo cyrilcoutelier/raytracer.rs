@@ -13,6 +13,10 @@ impl World {
         }
     }
 
+    pub fn add(self: &mut Self, object: Box<dyn Object>) {
+        self.objects.push(object);
+    }
+
     pub fn get_closest_intersection(self: &Self, ray: &Ray) -> Option<Intersection> {
         let mut intersections = Vec::new();
         for object in self.objects.iter() {

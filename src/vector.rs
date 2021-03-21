@@ -55,4 +55,12 @@ impl Vector {
         let norm = f32::sqrt(pow_sum);
         norm
     }
+
+    pub fn dot(self: &Self, right: &Self) -> f32 {
+        self.data
+            .iter()
+            .enumerate()
+            .map(|(i, left_val)| left_val * right.data[i])
+            .fold(0.0, |left, right| left + right)
+    }
 }
