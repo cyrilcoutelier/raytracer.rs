@@ -14,6 +14,8 @@ pub fn render(camera: &Camera, image: &mut Image, world: &World) {
     let image_height_f32 = image.height as f32;
     for image_x in 0..image.width {
         let image_x_f32 = image_x as f32;
+        let progress = image_x_f32 / image_width_f32 * 100.0;
+        print!("\rProgress: {}%", progress as i32);
         for image_y in 0..image.height {
             let image_y_f32 = image_y as f32;
             let viewport_x = image_x_f32 * camera.width / image_width_f32;
