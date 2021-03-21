@@ -19,6 +19,6 @@ impl Color {
 }
 
 fn convert(c: f32) -> u32 {
-    let c = c * config::NB_COLORS as f32;
+    let c = c * (config::NB_COLORS - 1) as f32;
     c as u32
 }
