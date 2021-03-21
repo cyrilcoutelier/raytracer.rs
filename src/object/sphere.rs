@@ -8,6 +8,7 @@ use crate::object::Object;
 use crate::point::Point;
 use crate::ray::Ray;
 use crate::utils;
+use crate::vector::Vector;
 
 pub struct Sphere {
     center: Point,
@@ -36,24 +37,32 @@ impl Object for Sphere {
         let discriminant = b * b - 4.0 * a * c;
         if float_eq!(discriminant, 0.0, abs <= 0.000_001) {
             let solution = -b / (2.0 * a);
-            return vec!(Intersection {
+            return vec![Intersection {
                 distance_ratio: solution,
                 color: self.color,
                 object,
-            });
+            }];
         } else if discriminant > 0.0 {
             let solution_1 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
             let solution_2 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
-            return vec!(Intersection {
-                distance_ratio: solution_1,
-                color: self.color,
-                object: object.clone(),
-            }, Intersection {
-                distance_ratio: solution_2,
-                color: self.color,
-                object,
-            });
+            return vec![
+                Intersection {
+                    distance_ratio: solution_1,
+                    color: self.color,
+                    object: object.clone(),
+                },
+                Intersection {
+                    distance_ratio: solution_2,
+                    color: self.color,
+                    object,
+                },
+            ];
         }
-        vec!()
+        vec![]
+    }
+
+    fn get_normal(self: &Self, hit_position: &Point, _camera_direction: &Vector) -> Vector {
+        let normal = utils::get_points_diff(&hit_position, &self.center);
+        normal.get_normalised()
     }
 }

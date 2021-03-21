@@ -12,3 +12,10 @@ pub fn get_points_diff(dest: &Point, origin: &Point) -> Vector {
     let z = dest.data[2] - origin.data[2];
     Vector::new(x, y, z)
 }
+
+pub fn translate(origin: &Point, direction: &Vector, ratio: f32) -> Point {
+    let x = origin.x() + direction.x() * ratio;
+    let y = origin.y() + direction.y() * ratio;
+    let z = origin.z() + direction.z() * ratio;
+    Point::new(x, y, z)
+}

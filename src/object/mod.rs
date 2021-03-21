@@ -4,14 +4,17 @@ pub mod plane;
 pub mod sphere;
 
 use crate::color::Color;
+use crate::point::Point;
 use crate::ray::Ray;
+use crate::vector::Vector;
 
 pub struct Intersection {
     pub distance_ratio: f32,
     pub color: Color,
-    pub object: Rc<dyn Object>
+    pub object: Rc<dyn Object>,
 }
 
 pub trait Object {
     fn get_intersections(&self, ray: &Ray, object: Rc<dyn Object>) -> Vec<Intersection>;
+    fn get_normal(&self, hit_position: &Point, camera_direction: &Vector) -> Vector;
 }

@@ -18,6 +18,7 @@ pub struct Plane {
 
 impl Plane {
     pub fn new(center: Point, normal: Vector, color: Color) -> Self {
+        let normal = normal.get_normalised();
         Plane {
             center,
             normal,
@@ -41,5 +42,13 @@ impl Object for Plane {
             color: self.color,
             object,
         }]
+    }
+
+    fn get_normal(self: &Self, _hit_position: &Point, camera_direction: &Vector) -> Vector {
+        let dot = camera_direction.dot(&self.normal);
+        if dot < 0.0 {
+            return self.normal.clone();
+        }
+        self.normal.get_reverse()
     }
 }

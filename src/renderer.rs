@@ -1,8 +1,13 @@
+use std::ptr;
+
 use crate::camera::Camera;
 use crate::color::Color;
 use crate::image::Image;
 use crate::matrix::Matrix;
+use crate::object::Intersection;
+use crate::object::Object;
 use crate::ray::Ray;
+use crate::utils;
 use crate::vector::Vector;
 use crate::world::World;
 use float_eq::float_eq;
@@ -34,11 +39,57 @@ pub fn render(camera: &Camera, image: &mut Image, world: &World) {
             let ray = Ray::new(ray_origin, ray_direction);
             let intersection = world.get_closest_intersection(&ray);
             match intersection {
-                Some(i) => image.set_color(image_x, image_y, i.color),
+                Some(i) => {
+                    let color = calc_color(&ray, world, &i);
+                    image.set_color(image_x, image_y, color);
+                }
                 None => image.set_color(image_x, image_y, Color::new(0.0, 0.0, 0.0)),
             };
         }
     }
+}
+
+fn calc_color(camera_ray: &Ray, world: &World, intersection: &Intersection) -> Color {
+    let hit_position = utils::translate(
+        &camera_ray.origin,
+        &camera_ray.direction,
+        intersection.distance_ratio,
+    );
+    let hit_normal = intersection
+        .object
+        .get_normal(&hit_position, &camera_ray.direction);
+
+    let mut light_color = Color::new(0.0, 0.0, 0.0);
+
+    for light in world.lights.iter() {
+        let direction = utils::get_points_diff(&light.position, &hit_position);
+        let normalized_direction = direction.get_normalised();
+        let light_ray = Ray::new(hit_position.clone(), direction);
+
+        let hits = world.get_intersections(&light_ray);
+        if hits
+            .iter()
+            .filter(|hit| is_valid_hit(hit, intersection.object.as_ref()))
+            .count()
+            == 0
+        {
+            // No obstruction to this light
+            let ratio = normalized_direction.dot(&hit_normal).abs();
+            let current_light_color = light.color.apply_ratio(ratio);
+            light_color.add_into(&current_light_color);
+        }
+    }
+    light_color.max_out();
+    light_color.multiply(&intersection.color)
+}
+
+fn is_valid_hit(hit: &Intersection, initial_object: &dyn Object) -> bool {
+    if ptr::eq(hit.object.as_ref(), initial_object)
+        && float_eq!(hit.distance_ratio, 0.0, abs <= 0.000_1)
+    {
+        return false;
+    }
+    hit.distance_ratio > 0.0 && hit.distance_ratio < 1.0
 }
 
 fn get_rotation_matrix(camera: &Camera) -> Matrix {

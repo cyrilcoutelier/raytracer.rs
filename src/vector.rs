@@ -1,5 +1,6 @@
 use std::cell::Cell;
 
+#[derive(Debug, Clone)]
 pub struct Vector {
     data: [f32; 3],
     norm: Cell<Option<f32>>,
@@ -21,6 +22,13 @@ impl Vector {
     }
     pub fn z(self: &Vector) -> f32 {
         self.data[2]
+    }
+
+    pub fn get_reverse(self: &Self) -> Self {
+        let x = -self.x();
+        let y = -self.y();
+        let z = -self.z();
+        Vector::new(x, y, z)
     }
 
     pub fn get_norm(self: &Vector) -> f32 {
@@ -62,5 +70,16 @@ impl Vector {
             .enumerate()
             .map(|(i, left_val)| left_val * right.data[i])
             .fold(0.0, |left, right| left + right)
+    }
+
+    pub fn get_normalised(self: &Self) -> Self {
+        let norm = self.get_norm();
+        let x = self.x() / norm;
+        let y = self.y() / norm;
+        let z = self.z() / norm;
+        Vector {
+            data: [x, y, z],
+            norm: Cell::new(Some(1.0)),
+        }
     }
 }
