@@ -63,6 +63,10 @@ fn calc_color(camera_ray: &Ray, world: &World, intersection: &Intersection) -> C
 
     for light in world.lights.iter() {
         let direction = utils::get_points_diff(&light.position, &hit_position);
+        if direction.dot(&hit_normal) < 0.0 {
+            // light is behind the object, no need to launch ray
+            continue;
+        }
         let normalized_direction = direction.get_normalised();
         let light_ray = Ray::new(hit_position.clone(), direction);
 
