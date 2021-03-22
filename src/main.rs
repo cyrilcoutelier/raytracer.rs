@@ -13,7 +13,7 @@ use raytracer::vector::Vector;
 use raytracer::world::World;
 use std::rc::Rc;
 
-const NB_SPHERES: usize = 10;
+const NB_SPHERES: usize = 3;
 const X_DISTANCE: f32 = 10.0;
 const MAX_DISTANCE: f32 = 5.0;
 const MAX_RADIUS: f32 = 3.0;
@@ -49,23 +49,26 @@ fn main() -> std::io::Result<()> {
         Vector::new(0.0, 1.0, 0.0),
         Color::new(1.0, 1.0, 1.0),
     )));
-    world.add_object(Rc::new(Sphere::new(
-        Point::new(10.0, 1.0, 0.0),
-        2.0,
-        Color::new(0.6, 0.6, 0.6),
-    )));
+    // world.add_object(Rc::new(Sphere::new(
+    //     Point::new(10.0, 1.0, 0.0),
+    //     2.0,
+    //     Color::new(0.6, 0.6, 0.6),
+    // )));
+    // world.add_light(Rc::new(SpotLight::new(
+    //     Point::new(15.0, 5.0, -5.0),
+    //     Color::new(1.0, 0.2, 0.2),
+    // )));
+    // world.add_light(Rc::new(SpotLight::new(
+    //     Point::new(15.0, 5.0, 5.0),
+    //     Color::new(0.2, 0.2, 1.0),
+    // )));
+    // world.add_light(Rc::new(SpotLight::new(
+    //     Point::new(5.0, 5.0, 0.0),
+    //     Color::new(0.2, 1.0, 0.2),
+    // )));
     world.add_light(Rc::new(SpotLight::new(
-        Point::new(15.0, 5.0, -5.0),
-        Color::new(1.0, 0.2, 0.2),
-    )));
-    world.add_light(Rc::new(SpotLight::new(
-        Point::new(15.0, 5.0, 5.0),
-        Color::new(0.2, 0.2, 1.0),
-    )));
-
-    world.add_light(Rc::new(SpotLight::new(
-        Point::new(5.0, 5.0, 0.0),
-        Color::new(0.2, 1.0, 0.2),
+        Point::new(5.0, 1.0, 0.0),
+        Color::new(1.0, 1.0, 1.0),
     )));
 
     render(&camera, &mut image, &world);
