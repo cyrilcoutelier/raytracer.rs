@@ -1,5 +1,5 @@
 use crate::light::spotlight::SpotLight;
-use crate::object::Intersection;
+use crate::object::Hit;
 use crate::object::Object;
 use crate::ray::Ray;
 use std::rc::Rc;
@@ -25,33 +25,32 @@ impl World {
         self.lights.push(light);
     }
 
-    pub fn get_closest_intersection(self: &Self, ray: &Ray) -> Option<Intersection> {
-        let intersections = self.get_intersections(ray);
+    pub fn get_closest_hit(self: &Self, ray: &Ray) -> Option<Hit> {
+        let hits = self.get_hits(ray);
 
-        if intersections.len() == 0 {
+        if hits.len() == 0 {
             return None;
         }
-        intersections
-            .into_iter()
-            .filter(|intersection| intersection.distance_ratio > 0.0)
+        hits.into_iter()
+            .filter(|hit| hit.distance_ratio > 0.0)
             .fold(None, get_closest)
     }
 
-    pub fn get_intersections(self: &Self, ray: &Ray) -> Vec<Intersection> {
-        let mut intersections = Vec::new();
+    pub fn get_hits(self: &Self, ray: &Ray) -> Vec<Hit> {
+        let mut hits = Vec::new();
         for object in self.objects.iter() {
-            let mut object_intersections = object.get_intersections(ray, object.clone());
-            intersections.append(&mut object_intersections);
+            let mut object_hits = object.get_hits(ray, object.clone());
+            hits.append(&mut object_hits);
         }
-        intersections
+        hits
     }
 }
 
-fn get_closest(left: Option<Intersection>, right: Intersection) -> Option<Intersection> {
+fn get_closest(left: Option<Hit>, right: Hit) -> Option<Hit> {
     match &left {
         None => Some(right),
-        Some(left_intersection) => {
-            if left_intersection.distance_ratio < right.distance_ratio {
+        Some(left_hit) => {
+            if left_hit.distance_ratio < right.distance_ratio {
                 left
             } else {
                 Some(right)

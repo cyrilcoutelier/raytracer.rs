@@ -3,7 +3,7 @@ use std::rc::Rc;
 use float_eq::float_eq;
 
 use crate::color::Color;
-use crate::object::Intersection;
+use crate::object::Hit;
 use crate::object::Object;
 use crate::point::Point;
 use crate::ray::Ray;
@@ -28,7 +28,7 @@ impl Plane {
 }
 
 impl Object for Plane {
-    fn get_intersections(self: &Self, ray: &Ray, object: Rc<dyn Object>) -> Vec<Intersection> {
+    fn get_hits(self: &Self, ray: &Ray, object: Rc<dyn Object>) -> Vec<Hit> {
         let dot = self.normal.dot(&ray.direction);
         if float_eq!(dot, 0.0, abs <= 0.000_001) {
             return vec![];
@@ -37,7 +37,7 @@ impl Object for Plane {
         let vec_to_plane = utils::get_points_diff(&self.center, &ray.origin);
         let distance_ratio = self.normal.dot(&vec_to_plane) / dot;
 
-        vec![Intersection {
+        vec![Hit {
             distance_ratio,
             color: self.color,
             object,

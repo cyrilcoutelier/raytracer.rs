@@ -3,7 +3,7 @@ use std::rc::Rc;
 use float_eq::float_eq;
 
 use crate::color::Color;
-use crate::object::Intersection;
+use crate::object::Hit;
 use crate::object::Object;
 use crate::point::Point;
 use crate::ray::Ray;
@@ -27,7 +27,7 @@ impl Sphere {
 }
 
 impl Object for Sphere {
-    fn get_intersections(self: &Self, ray: &Ray, object: Rc<dyn Object>) -> Vec<Intersection> {
+    fn get_hits(self: &Self, ray: &Ray, object: Rc<dyn Object>) -> Vec<Hit> {
         let camera_pos_relative = utils::get_points_diff(&ray.origin, &self.center);
 
         let a = ray.direction.dot(&ray.direction);
@@ -37,7 +37,7 @@ impl Object for Sphere {
         let discriminant = b * b - 4.0 * a * c;
         if float_eq!(discriminant, 0.0, abs <= 0.000_001) {
             let solution = -b / (2.0 * a);
-            return vec![Intersection {
+            return vec![Hit {
                 distance_ratio: solution,
                 color: self.color,
                 object,
@@ -46,12 +46,12 @@ impl Object for Sphere {
             let solution_1 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
             let solution_2 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
             return vec![
-                Intersection {
+                Hit {
                     distance_ratio: solution_1,
                     color: self.color,
                     object: object.clone(),
                 },
-                Intersection {
+                Hit {
                     distance_ratio: solution_2,
                     color: self.color,
                     object,
