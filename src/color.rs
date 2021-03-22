@@ -6,6 +6,12 @@ pub struct Color {
 }
 
 impl Color {
+    pub fn new_black() -> Color {
+        Color {
+            data: [0.0, 0.0, 0.0],
+        }
+    }
+
     pub fn new(red: f32, green: f32, blue: f32) -> Color {
         Color {
             data: [red, green, blue],

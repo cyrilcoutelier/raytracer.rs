@@ -50,6 +50,14 @@ pub fn render(camera: &Camera, image: &mut Image, world: &World) {
 }
 
 fn calc_color(camera_ray: &Ray, world: &World, hit: &Hit) -> Color {
+    let mut color = Color::new_black();
+    let transmited_color = calc_transmited_color(camera_ray, world, hit);
+    color.add_into(&transmited_color);
+    color.max_out();
+    color
+}
+
+fn calc_transmited_color(camera_ray: &Ray, world: &World, hit: &Hit) -> Color {
     let hit_position = utils::translate(
         &camera_ray.origin,
         &camera_ray.direction,
