@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use crate::color::Color;
 use crate::light::Light;
 use crate::object::Hit;
@@ -30,8 +32,8 @@ impl Light for SpotLight {
         hit.distance_ratio > 0.0 && hit.distance_ratio <= 1.0
     }
 
-    fn get_intensity(self: &Self, _distance: f32) -> f32 {
-        self.intensity
+    fn get_intensity(self: &Self, distance: f32) -> f32 {
+        self.intensity / (distance * distance * 4.0 * PI)
     }
 
     fn get_color(self: &Self) -> &Color {
