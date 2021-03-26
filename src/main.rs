@@ -4,6 +4,7 @@ use raytracer::color::Color;
 use raytracer::config;
 use raytracer::image::Image;
 use raytracer::light::spotlight::SpotLight;
+use raytracer::light::vectorlight::VectorLight;
 use raytracer::object::plane::Plane;
 use raytracer::object::sphere::Sphere;
 use raytracer::output;
@@ -70,6 +71,10 @@ fn main() -> std::io::Result<()> {
         Point::new(5.0, -1.0, 0.0),
         1.0,
         Color::new(1.0, 1.0, 1.0),
+    world.add_light(Box::new(VectorLight::new(
+        Vector::new(-1.0, -1.0, -1.0),
+        0.5,
+        Color::new(1.0, 0.5, 0.25),
     )));
 
     render(&camera, &mut image, &world);

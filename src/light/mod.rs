@@ -4,6 +4,7 @@ use crate::point::Point;
 use crate::vector::Vector;
 
 pub mod spotlight;
+pub mod vectorlight;
 
 pub trait Light {
     fn get_direction(&self, target: &Point) -> Vector;
