@@ -66,8 +66,9 @@ fn main() -> std::io::Result<()> {
     //     Point::new(5.0, 5.0, 0.0),
     //     Color::new(0.2, 1.0, 0.2),
     // )));
-    world.add_light(Rc::new(SpotLight::new(
-        Point::new(5.0, 1.0, 0.0),
+    world.add_light(Box::new(SpotLight::new(
+        Point::new(5.0, -1.0, 0.0),
+        1.0,
         Color::new(1.0, 1.0, 1.0),
     )));
 

@@ -1,4 +1,4 @@
-use crate::light::spotlight::SpotLight;
+use crate::light::Light;
 use crate::object::Hit;
 use crate::object::Object;
 use crate::ray::Ray;
@@ -6,7 +6,7 @@ use std::rc::Rc;
 
 pub struct World {
     objects: Vec<Rc<dyn Object>>,
-    pub lights: Vec<Rc<SpotLight>>,
+    pub lights: Vec<Box<dyn Light>>,
 }
 
 impl World {
@@ -21,7 +21,7 @@ impl World {
         self.objects.push(object);
     }
 
-    pub fn add_light(self: &mut Self, light: Rc<SpotLight>) {
+    pub fn add_light(self: &mut Self, light: Box<dyn Light>) {
         self.lights.push(light);
     }
 

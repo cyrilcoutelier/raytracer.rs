@@ -1,3 +1,4 @@
+use std::f32::consts::PI;
 use std::ptr;
 
 use crate::camera::Camera;
@@ -41,10 +42,11 @@ pub fn render(camera: &Camera, image: &mut Image, world: &World) {
 
             let ray = Ray::new(ray_origin, ray_direction);
             let hit_opts = world.get_closest_hit(&ray);
-            let color = match hit_opts {
+            let mut color = match hit_opts {
                 Some(hit) => calc_color(&ray, world, &hit),
                 None => calc_light_color(&ray, world),
             };
+            color.max_out();
             image.set_color(image_x, image_y, color);
         }
     }
@@ -56,7 +58,6 @@ fn calc_color(camera_ray: &Ray, world: &World, hit: &Hit) -> Color {
     color.add_into(&transmited_color);
     let light_color = calc_light_color(camera_ray, world);
     color.add_into(&light_color);
-    color.max_out();
     color
 }
 
@@ -65,35 +66,38 @@ fn calc_light_color(camera_ray: &Ray, world: &World) -> Color {
     let normalized_ray = camera_ray.direction.get_normalised();
 
     for light in world.lights.iter() {
-        let direction = utils::get_points_diff(&light.position, &camera_ray.origin);
+        let direction = light.get_direction(&camera_ray.origin);
         let normalized_direction = direction.get_normalised();
-        let light_ratio = normalized_direction.dot(&normalized_ray);
-        if light_ratio < 0.0 {
+        let angle_ratio = normalized_direction.dot(&normalized_ray);
+        if angle_ratio < 0.0 {
             // light is behind the camera, no need to launch ray
             continue;
         }
 
-        let light_ratio = light_ratio.powf(LIGHT_INCREASE);
-        if light_ratio < DIRECT_LIGHT_CEIL {
+        let angle_ratio = angle_ratio.powf(LIGHT_INCREASE);
+        if angle_ratio < DIRECT_LIGHT_CEIL {
             // The resulting light would be too little, no need to compute
             continue;
         }
+        let distance = direction.get_norm();
         let light_ray = Ray::new(camera_ray.origin.clone(), direction);
 
         let hits = world.get_hits(&light_ray);
         if hits
             .iter()
-            .filter(|light_hit| is_valid_hit(light_hit, None))
+            .filter(|light_hit| light.is_touching(light_hit))
             .count()
-            == 0
+            > 0
         {
-            // No obstruction to this light
-            let current_light_color = light.color.apply_ratio(light_ratio);
-            light_color.add_into(&current_light_color);
+            // Something is between the camera and the light
         }
+
+        let intensity = light.get_intensity(distance);
+        let ratio = intensity * angle_ratio;
+        let current_light_color = light.get_color().apply_ratio(ratio);
+        light_color.add_into(&current_light_color);
     }
 
-    light_color.max_out();
     light_color
 }
 
@@ -108,43 +112,42 @@ fn calc_transmited_color(camera_ray: &Ray, world: &World, hit: &Hit) -> Color {
     let mut light_color = Color::new_black();
 
     for light in world.lights.iter() {
-        let direction = utils::get_points_diff(&light.position, &hit_position);
+        let direction = light.get_direction(&hit_position);
         if direction.dot(&hit_normal) < 0.0 {
             // light is behind the object, no need to launch ray
             continue;
         }
         let normalized_direction = direction.get_normalised();
+        let distance = direction.get_norm();
         let light_ray = Ray::new(hit_position.clone(), direction);
 
         let hits = world.get_hits(&light_ray);
         if hits
             .iter()
-            .filter(|light_hit| is_valid_hit(light_hit, Some(hit.object.as_ref())))
+            .filter(|light_hit| {
+                light.is_touching(light_hit) && !is_self_hit(light_hit, hit.object.as_ref())
+            })
             .count()
-            == 0
+            > 0
         {
-            // No obstruction to this light
-            let ratio = normalized_direction.dot(&hit_normal).abs();
-            let current_light_color = light.color.apply_ratio(ratio);
-            light_color.add_into(&current_light_color);
+            // Something is between the hit and the light
+            continue;
         }
+
+        let normal_ratio = normalized_direction.dot(&hit_normal).abs();
+
+        let ratio = normal_ratio * light.get_intensity(distance) / PI;
+        let current_light_color = light.get_color().apply_ratio(ratio);
+        light_color.add_into(&current_light_color);
     }
-    light_color.max_out();
     light_color.multiply(&hit.color)
 }
 
-fn is_valid_hit(hit: &Hit, initial_object_option: Option<&dyn Object>) -> bool {
-    match initial_object_option {
-        Some(initial_object) => {
-            if ptr::eq(hit.object.as_ref(), initial_object)
-                && float_eq!(hit.distance_ratio, 0.0, abs <= 0.000_1)
-            {
-                return false;
-            }
-        }
-        None => (),
+fn is_self_hit(hit: &Hit, initial_object: &dyn Object) -> bool {
+    if !ptr::eq(hit.object.as_ref(), initial_object) {
+        return false;
     }
-    hit.distance_ratio > 0.0 && hit.distance_ratio < 1.0
+    float_eq!(hit.distance_ratio, 0.0, abs <= 0.000_1)
 }
 
 fn get_rotation_matrix(camera: &Camera) -> Matrix {
