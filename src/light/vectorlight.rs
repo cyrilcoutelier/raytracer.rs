@@ -3,7 +3,6 @@ use crate::point::Point;
 use crate::light::Light;
 use crate::vector::Vector;
 use crate::object::Hit;
-use crate::utils;
 
 pub struct VectorLight {
     pub direction: Vector,
