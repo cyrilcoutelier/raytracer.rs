@@ -14,14 +14,16 @@ pub struct Sphere {
     center: Point,
     radius: f32,
     color: Color,
+    reflexion: f32,
 }
 
 impl Sphere {
-    pub fn new(center: Point, radius: f32, color: Color) -> Self {
+    pub fn new(center: Point, radius: f32, color: Color, reflexion: f32) -> Self {
         Sphere {
             center,
             radius,
             color,
+            reflexion,
         }
     }
 }
@@ -64,5 +66,9 @@ impl Object for Sphere {
     fn get_normal(self: &Self, hit_position: &Point, _camera_direction: &Vector) -> Vector {
         let normal = utils::get_points_diff(&hit_position, &self.center);
         normal.get_normalised()
+    }
+
+    fn get_reflexion(self: &Self) -> f32 {
+        self.reflexion
     }
 }

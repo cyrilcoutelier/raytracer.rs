@@ -14,15 +14,17 @@ pub struct Plane {
     center: Point,
     normal: Vector,
     color: Color,
+    reflexion: f32,
 }
 
 impl Plane {
-    pub fn new(center: Point, normal: Vector, color: Color) -> Self {
+    pub fn new(center: Point, normal: Vector, color: Color, reflexion: f32) -> Self {
         let normal = normal.get_normalised();
         Plane {
             center,
             normal,
             color,
+            reflexion,
         }
     }
 }
@@ -50,5 +52,9 @@ impl Object for Plane {
             return self.normal.clone();
         }
         self.normal.get_reverse()
+    }
+
+    fn get_reflexion(self: &Self) -> f32 {
+        self.reflexion
     }
 }

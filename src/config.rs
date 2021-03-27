@@ -6,3 +6,5 @@ pub const FOCAL_LENGTH: f32 = 1.0;
 
 pub const OUTPUT_FILE: &str = "image.ppm";
 pub const NB_COLORS: usize = 256;
+
+pub const MAX_DEPTH: usize = 4;

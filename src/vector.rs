@@ -82,4 +82,18 @@ impl Vector {
             norm: Cell::new(Some(1.0)),
         }
     }
+
+    pub fn multiply(self: &Self, ratio: f32) -> Self {
+        let x = self.x() * ratio;
+        let y = self.y() * ratio;
+        let z = self.z() * ratio;
+        Vector::new(x, y, z)
+    }
+
+    pub fn diff(self: &Self, right: &Self) -> Self {
+        let x = self.x() - right.x();
+        let y = self.y() - right.y();
+        let z = self.z() - right.z();
+        Vector::new(x, y, z)
+    }
 }

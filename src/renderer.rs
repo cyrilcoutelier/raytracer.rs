@@ -3,8 +3,10 @@ use std::ptr;
 
 use crate::camera::Camera;
 use crate::color::Color;
+use crate::config;
 use crate::image::Image;
 use crate::matrix::Matrix;
+use crate::object::get_closest;
 use crate::object::Hit;
 use crate::object::Object;
 use crate::ray::Ray;
@@ -39,29 +41,60 @@ pub fn render(camera: &Camera, image: &mut Image, world: &World) {
 
             let ray_direction = matrix.dot_vector(&ray_direction);
             let ray_origin = camera.position.clone();
-
             let ray = Ray::new(ray_origin, ray_direction);
-            let hit_opts = world.get_closest_hit(&ray);
-            let mut color = match hit_opts {
-                Some(hit) => calc_color(&ray, world, &hit),
-                None => calc_light_color(&ray, world),
-            };
+
+            let mut color = launch_ray(&ray, world, None, 0);
             color.max_out();
             image.set_color(image_x, image_y, color);
         }
     }
 }
 
-fn calc_color(camera_ray: &Ray, world: &World, hit: &Hit) -> Color {
+fn launch_ray(
+    ray: &Ray,
+    world: &World,
+    emitting_object: Option<&dyn Object>,
+    depth: usize,
+) -> Color {
+    if depth > config::MAX_DEPTH {
+        return Color::new_black();
+    }
+
+    let hits = world.get_hits(ray);
+    let hit_opts = hits
+        .into_iter()
+        .filter(|hit| hit.distance_ratio > 0.0 && !is_self_hit(hit, emitting_object))
+        .fold(None, get_closest);
+    match hit_opts {
+        Some(hit) => calc_color(&ray, world, emitting_object, &hit, depth),
+        None => calc_light_color(&ray, world, emitting_object),
+    }
+}
+
+fn calc_color(
+    camera_ray: &Ray,
+    world: &World,
+    emitting_object: Option<&dyn Object>,
+    hit: &Hit,
+    depth: usize,
+) -> Color {
     let mut color = Color::new_black();
     let transmited_color = calc_transmited_color(camera_ray, world, hit);
     color.add_into(&transmited_color);
-    let light_color = calc_light_color(camera_ray, world);
+    let light_color = calc_light_color(camera_ray, world, emitting_object);
     color.add_into(&light_color);
+    if hit.object.has_reflexion() {
+        let reflexion_color = calc_reflexion_color(camera_ray, world, hit, depth + 1);
+        color.add_into(&reflexion_color);
+    }
     color
 }
 
-fn calc_light_color(camera_ray: &Ray, world: &World) -> Color {
+fn calc_light_color(
+    camera_ray: &Ray,
+    world: &World,
+    emitting_object: Option<&dyn Object>,
+) -> Color {
     let mut light_color = Color::new_black();
     let normalized_ray = camera_ray.direction.get_normalised();
 
@@ -85,7 +118,9 @@ fn calc_light_color(camera_ray: &Ray, world: &World) -> Color {
         let hits = world.get_hits(&light_ray);
         if hits
             .iter()
-            .filter(|light_hit| light.is_touching(light_hit))
+            .filter(|light_hit| {
+                light.is_touching(light_hit) && !is_self_hit(light_hit, emitting_object)
+            })
             .count()
             > 0
         {
@@ -125,7 +160,7 @@ fn calc_transmited_color(camera_ray: &Ray, world: &World, hit: &Hit) -> Color {
         if hits
             .iter()
             .filter(|light_hit| {
-                light.is_touching(light_hit) && !is_self_hit(light_hit, hit.object.as_ref())
+                light.is_touching(light_hit) && !is_self_hit(light_hit, Some(hit.object.as_ref()))
             })
             .count()
             > 0
@@ -136,18 +171,51 @@ fn calc_transmited_color(camera_ray: &Ray, world: &World, hit: &Hit) -> Color {
 
         let normal_ratio = normalized_direction.dot(&hit_normal).abs();
 
-        let ratio = normal_ratio * light.get_intensity(distance) / PI;
+        let ratio =
+            normal_ratio * light.get_intensity(distance) / PI * hit.object.get_transmission();
         let current_light_color = light.get_color().apply_ratio(ratio);
         light_color.add_into(&current_light_color);
     }
     light_color.multiply(&hit.color)
 }
 
-fn is_self_hit(hit: &Hit, initial_object: &dyn Object) -> bool {
-    if !ptr::eq(hit.object.as_ref(), initial_object) {
-        return false;
+fn calc_reflexion_color(
+    incident_ray: &Ray,
+    world: &World,
+    incident_hit: &Hit,
+    depth: usize,
+) -> Color {
+    let hit_position = utils::translate(
+        &incident_ray.origin,
+        &incident_ray.direction,
+        incident_hit.distance_ratio,
+    );
+    let incident_direction = incident_ray.direction.get_normalised();
+    let hit_normal = incident_hit
+        .object
+        .get_normal(&hit_position, &incident_ray.direction);
+    let dot = hit_normal.dot(&incident_direction);
+    let reflected_direction = incident_direction.diff(&hit_normal.multiply(2.0 * dot));
+
+    let reflected_ray = Ray::new(hit_position, reflected_direction);
+    return launch_ray(
+        &reflected_ray,
+        world,
+        Some(incident_hit.object.as_ref()),
+        depth,
+    );
+}
+
+fn is_self_hit(hit: &Hit, initial_object_opts: Option<&dyn Object>) -> bool {
+    match initial_object_opts {
+        Some(initial_object) => {
+            if !ptr::eq(hit.object.as_ref(), initial_object) {
+                return false;
+            }
+            float_eq!(hit.distance_ratio, 0.0, abs <= 0.000_1)
+        }
+        None => false,
     }
-    float_eq!(hit.distance_ratio, 0.0, abs <= 0.000_1)
 }
 
 fn get_rotation_matrix(camera: &Camera) -> Matrix {

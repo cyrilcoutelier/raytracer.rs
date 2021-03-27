@@ -1,8 +1,8 @@
 use crate::color::Color;
-use crate::point::Point;
 use crate::light::Light;
-use crate::vector::Vector;
 use crate::object::Hit;
+use crate::point::Point;
+use crate::vector::Vector;
 
 pub struct VectorLight {
     pub direction: Vector,
@@ -36,5 +36,4 @@ impl Light for VectorLight {
     fn get_color(self: &Self) -> &Color {
         &self.color
     }
-  }
-  
+}
