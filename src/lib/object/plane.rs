@@ -30,7 +30,7 @@ impl Plane {
 }
 
 impl Object for Plane {
-    fn get_hits(self: &Self, ray: &Ray, object: Rc<dyn Object>) -> Vec<Hit> {
+    fn get_hits<'a>(self: &Self, ray: &'a Ray, object: Rc<dyn Object>) -> Vec<Hit<'a>> {
         let dot = self.normal.dot(&ray.direction);
         if float_eq!(dot, 0.0, abs <= 0.000_001) {
             return vec![];
@@ -39,11 +39,7 @@ impl Object for Plane {
         let vec_to_plane = utils::get_points_diff(&self.center, &ray.origin);
         let distance_ratio = self.normal.dot(&vec_to_plane) / dot;
 
-        vec![Hit {
-            distance_ratio,
-            color: self.color,
-            object,
-        }]
+        vec![Hit::new(distance_ratio, object, ray)]
     }
 
     fn get_normal(self: &Self, _hit_position: &Point, camera_direction: &Vector) -> Vector {
@@ -56,5 +52,9 @@ impl Object for Plane {
 
     fn get_reflexion(self: &Self) -> f32 {
         self.reflexion
+    }
+
+    fn get_color(self: &Self) -> &Color {
+        &self.color
     }
 }

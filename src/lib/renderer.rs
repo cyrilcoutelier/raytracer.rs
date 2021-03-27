@@ -2,9 +2,9 @@ use crate::camera::Camera;
 use crate::image::Image;
 use crate::matrix::Matrix;
 use crate::ray::Ray;
+use crate::raylauncher::RayLauncher;
 use crate::vector::Vector;
 use crate::world::World;
-use crate::raylauncher::RayLauncher;
 use float_eq::float_eq;
 
 pub fn render(camera: &Camera, image: &mut Image, world: &World) {

@@ -1,5 +1,5 @@
+use crate::hit::Hit;
 use crate::light::Light;
-use crate::object::Hit;
 use crate::object::Object;
 use crate::ray::Ray;
 use std::rc::Rc;
@@ -25,7 +25,7 @@ impl World {
         self.lights.push(light);
     }
 
-    pub fn get_hits(self: &Self, ray: &Ray) -> Vec<Hit> {
+    pub fn get_hits<'a>(self: &Self, ray: &'a Ray) -> Vec<Hit<'a>> {
         let mut hits = Vec::new();
         for object in self.objects.iter() {
             let mut object_hits = object.get_hits(ray, object.clone());

@@ -29,7 +29,7 @@ impl Sphere {
 }
 
 impl Object for Sphere {
-    fn get_hits(self: &Self, ray: &Ray, object: Rc<dyn Object>) -> Vec<Hit> {
+    fn get_hits<'a>(self: &Self, ray: &'a Ray, object: Rc<dyn Object>) -> Vec<Hit<'a>> {
         let camera_pos_relative = utils::get_points_diff(&ray.origin, &self.center);
 
         let a = ray.direction.dot(&ray.direction);
@@ -39,25 +39,13 @@ impl Object for Sphere {
         let discriminant = b * b - 4.0 * a * c;
         if float_eq!(discriminant, 0.0, abs <= 0.000_001) {
             let solution = -b / (2.0 * a);
-            return vec![Hit {
-                distance_ratio: solution,
-                color: self.color,
-                object,
-            }];
+            return vec![Hit::new(solution, object, ray)];
         } else if discriminant > 0.0 {
             let solution_1 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
             let solution_2 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
             return vec![
-                Hit {
-                    distance_ratio: solution_1,
-                    color: self.color,
-                    object: object.clone(),
-                },
-                Hit {
-                    distance_ratio: solution_2,
-                    color: self.color,
-                    object,
-                },
+                Hit::new(solution_1, object.clone(), ray),
+                Hit::new(solution_2, object, ray),
             ];
         }
         vec![]
@@ -70,5 +58,9 @@ impl Object for Sphere {
 
     fn get_reflexion(self: &Self) -> f32 {
         self.reflexion
+    }
+
+    fn get_color(self: &Self) -> &Color {
+        &self.color
     }
 }

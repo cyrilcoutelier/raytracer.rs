@@ -4,18 +4,13 @@ pub mod plane;
 pub mod sphere;
 
 use crate::color::Color;
+use crate::hit::Hit;
 use crate::point::Point;
 use crate::ray::Ray;
 use crate::vector::Vector;
 
-pub struct Hit {
-    pub distance_ratio: f32,
-    pub color: Color,
-    pub object: Rc<dyn Object>,
-}
-
 pub trait Object {
-    fn get_hits(&self, ray: &Ray, object: Rc<dyn Object>) -> Vec<Hit>;
+    fn get_hits<'a>(&self, ray: &'a Ray, object: Rc<dyn Object>) -> Vec<Hit<'a>>;
     fn get_normal(&self, hit_position: &Point, camera_direction: &Vector) -> Vector;
     fn get_reflexion(&self) -> f32;
     fn has_reflexion(&self) -> bool {
@@ -26,9 +21,10 @@ pub trait Object {
         let reflexion = self.get_reflexion();
         return 1.0 - reflexion;
     }
+    fn get_color(&self) -> &Color;
 }
 
-pub fn get_closest(left: Option<Hit>, right: Hit) -> Option<Hit> {
+pub fn get_closest<'a>(left: Option<Hit<'a>>, right: Hit<'a>) -> Option<Hit<'a>> {
     match &left {
         None => Some(right),
         Some(left_hit) => {
