@@ -101,6 +101,7 @@ impl<'a> RayLauncher<'a> {
         > 0
       {
         // Something is between the camera and the light
+        continue;
       }
 
       let intensity = light.get_intensity(distance);
