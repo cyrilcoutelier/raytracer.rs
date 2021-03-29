@@ -43,7 +43,7 @@ impl<'a> Hit<'a> {
     fn calc_is_outside(self: &Self) -> bool {
         let normal = self.get_normal();
         let dot = normal.dot(&self.ray.direction);
-        dot > 0.0
+        dot < 0.0
     }
 
     pub fn get_normal(self: &Self) -> &Vector {
