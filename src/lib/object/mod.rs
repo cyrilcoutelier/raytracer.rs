@@ -17,9 +17,15 @@ pub trait Object {
         let reflexion = self.get_reflexion();
         return reflexion > 0.0;
     }
+    fn get_refraction(&self) -> f32;
+    fn has_refraction(&self) -> bool {
+        let refraction = self.get_refraction();
+        return refraction > 0.0;
+    }
     fn get_transmission(&self) -> f32 {
         let reflexion = self.get_reflexion();
-        return 1.0 - reflexion;
+        let refraction = self.get_refraction();
+        return 1.0 - (reflexion + refraction);
     }
     fn get_color(&self) -> &Color;
 }

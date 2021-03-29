@@ -90,6 +90,13 @@ impl Vector {
         Vector::new(x, y, z)
     }
 
+    pub fn add(self: &Self, right: &Self) -> Self {
+        let x = self.x() + right.x();
+        let y = self.y() + right.y();
+        let z = self.z() + right.z();
+        Vector::new(x, y, z)
+    }
+
     pub fn diff(self: &Self, right: &Self) -> Self {
         let x = self.x() - right.x();
         let y = self.y() - right.y();

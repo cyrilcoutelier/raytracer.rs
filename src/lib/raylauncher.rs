@@ -12,6 +12,7 @@ use crate::world::World;
 
 const DIRECT_LIGHT_CEIL: f32 = 0.01;
 const LIGHT_INCREASE: f32 = 30.0;
+const REFRACTIVE_INDEX: f32 = 1.5;
 
 pub struct RayLauncher<'a> {
     world: &'a World,
@@ -62,6 +63,10 @@ impl<'a> RayLauncher<'a> {
         if hit.object.has_reflexion() {
             let reflexion_color = self.calc_reflexion_color(camera_ray, hit, depth + 1);
             color.add_into(&reflexion_color);
+        }
+        if hit.object.has_refraction() {
+            let refraction_color = self.calc_refraction_color(camera_ray, hit, depth + 1);
+            color.add_into(&refraction_color);
         }
         color
     }
@@ -167,6 +172,41 @@ impl<'a> RayLauncher<'a> {
 
         let reflected_ray = Ray::new(hit_position.clone(), reflected_direction);
         self.launch_ray(&reflected_ray, Some(incident_hit.object.as_ref()), depth)
+    }
+
+    fn calc_refraction_color(
+        self: &Self,
+        incident_ray: &Ray,
+        incident_hit: &Hit,
+        depth: usize,
+    ) -> Color {
+        let hit_position = incident_hit.get_position();
+        let mut hit_normal = incident_hit.get_normal();
+        let incident_direction = incident_ray.direction.get_normalised();
+
+        let mut lol = None;
+
+        let mut refration_ratio = 1.0 / REFRACTIVE_INDEX;
+        let mut dot_normal_incident = incident_direction.dot(&hit_normal);
+        if incident_hit.is_outside() {
+            dot_normal_incident = -dot_normal_incident;
+        } else {
+            refration_ratio = 1.0 / refration_ratio;
+            hit_normal = lol.get_or_insert(hit_normal.get_reverse());
+        }
+
+        let k = 1.0
+            - refration_ratio * refration_ratio * (1.0 - dot_normal_incident * dot_normal_incident);
+
+        if k > 0.0 {
+            let right_coeff = refration_ratio * dot_normal_incident - f32::sqrt(k);
+            let refracted_direction = incident_direction
+                .multiply(refration_ratio)
+                .add(&hit_normal.multiply(right_coeff));
+            let refracted_ray = Ray::new(hit_position.clone(), refracted_direction);
+            return self.launch_ray(&refracted_ray, Some(incident_hit.object.as_ref()), depth);
+        }
+        Color::new_black()
     }
 }
 

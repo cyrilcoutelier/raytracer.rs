@@ -15,15 +15,17 @@ pub struct Sphere {
     radius: f32,
     color: Color,
     reflexion: f32,
+    refraction: f32,
 }
 
 impl Sphere {
-    pub fn new(center: Point, radius: f32, color: Color, reflexion: f32) -> Self {
+    pub fn new(center: Point, radius: f32, color: Color, reflexion: f32, refraction: f32) -> Self {
         Sphere {
             center,
             radius,
             color,
             reflexion,
+            refraction,
         }
     }
 }
@@ -58,6 +60,10 @@ impl Object for Sphere {
 
     fn get_reflexion(self: &Self) -> f32 {
         self.reflexion
+    }
+
+    fn get_refraction(self: &Self) -> f32 {
+        self.refraction
     }
 
     fn get_color(self: &Self) -> &Color {

@@ -57,4 +57,8 @@ impl Object for Plane {
     fn get_color(self: &Self) -> &Color {
         &self.color
     }
+
+    fn get_refraction(self: &Self) -> f32 {
+        0.0
+    }
 }

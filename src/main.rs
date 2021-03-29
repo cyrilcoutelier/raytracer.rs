@@ -14,7 +14,7 @@ use raytracer::vector::Vector;
 use raytracer::world::World;
 use std::rc::Rc;
 
-const NB_SPHERES: usize = 3;
+const NB_SPHERES: usize = 10;
 const X_DISTANCE: f32 = 10.0;
 const MAX_DISTANCE: f32 = 5.0;
 const MAX_RADIUS: f32 = 3.0;
@@ -32,29 +32,53 @@ fn main() -> std::io::Result<()> {
     );
     let mut world = World::new();
 
-    let mut rng = rand::thread_rng();
-    for _i in 0..NB_SPHERES {
-        let x = rng.gen_range(X_DISTANCE - MAX_DISTANCE..MAX_DISTANCE + X_DISTANCE);
-        let y = rng.gen_range(-MAX_DISTANCE..MAX_DISTANCE);
-        let z = rng.gen_range(-MAX_DISTANCE..MAX_DISTANCE);
-        let radius = rng.gen_range(MIN_RADIUS..MAX_RADIUS);
-        let red = rng.gen_range(0.0..1.0);
-        let green = rng.gen_range(0.0..1.0);
-        let blue = rng.gen_range(0.0..1.0);
-        let color = Color::new(red, green, blue);
-        let sphere = Sphere::new(Point::new(x, y, z), radius, color);
-        world.add_object(Rc::new(sphere));
-    }
+    // let mut rng = rand::thread_rng();
+    // for _i in 0..NB_SPHERES {
+    //     let x = rng.gen_range(X_DISTANCE - MAX_DISTANCE..MAX_DISTANCE + X_DISTANCE);
+    //     let y = rng.gen_range(-MAX_DISTANCE..MAX_DISTANCE);
+    //     let z = rng.gen_range(-MAX_DISTANCE..MAX_DISTANCE);
+    //     let radius = rng.gen_range(MIN_RADIUS..MAX_RADIUS);
+    //     let red = rng.gen_range(0.0..1.0);
+    //     let green = rng.gen_range(0.0..1.0);
+    //     let blue = rng.gen_range(0.0..1.0);
+    //     let color = Color::new(red, green, blue);
+    //     let sphere = Sphere::new(Point::new(x, y, z), radius, color, 0.0, 0.0);
+    //     world.add_object(Rc::new(sphere));
+    // }
     world.add_object(Rc::new(Plane::new(
         Point::new(0.0, -3.0, 0.0),
         Vector::new(0.0, 1.0, 0.0),
         Color::new(1.0, 1.0, 1.0),
+        0.4,
     )));
-    // world.add_object(Rc::new(Sphere::new(
-    //     Point::new(10.0, 1.0, 0.0),
-    //     2.0,
-    //     Color::new(0.6, 0.6, 0.6),
-    // )));
+    world.add_object(Rc::new(Sphere::new(
+        Point::new(5.0, 1.0, -3.0),
+        2.0,
+        Color::new(1.0, 0.6, 0.6),
+        0.0,
+        0.0,
+    )));
+    world.add_object(Rc::new(Sphere::new(
+        Point::new(3.0, 0.0, 0.0),
+        1.0,
+        Color::new(0.9, 1.0, 0.9),
+        0.0,
+        0.9,
+    )));
+    world.add_object(Rc::new(Sphere::new(
+        Point::new(5.0, 1.0, 3.0),
+        2.0,
+        Color::new(0.6, 0.6, 1.0),
+        0.6,
+        0.0,
+    )));
+    world.add_object(Rc::new(Sphere::new(
+        Point::new(7.0, 0.5, 0.0),
+        2.0,
+        Color::new(0.6, 1.0, 0.6),
+        0.6,
+        0.0,
+    )));
     // world.add_light(Rc::new(SpotLight::new(
     //     Point::new(15.0, 5.0, -5.0),
     //     Color::new(1.0, 0.2, 0.2),
@@ -68,9 +92,10 @@ fn main() -> std::io::Result<()> {
     //     Color::new(0.2, 1.0, 0.2),
     // )));
     world.add_light(Box::new(SpotLight::new(
-        Point::new(5.0, -1.0, 0.0),
-        1.0,
+        Point::new(3.0, 3.0, 0.0),
+        500.0,
         Color::new(1.0, 1.0, 1.0),
+    )));
     world.add_light(Box::new(VectorLight::new(
         Vector::new(-1.0, -1.0, -1.0),
         0.5,
