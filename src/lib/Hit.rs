@@ -1,4 +1,4 @@
-use std::lazy::OnceCell;
+use once_cell::unsync::OnceCell;
 use std::rc::Rc;
 
 use crate::object::Object;
